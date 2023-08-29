@@ -1,11 +1,8 @@
-import { Observable } from 'rxjs';
+import { from } from 'rxjs';
 
-const stream: Observable<number> = new Observable((consumer) => {
-  consumer.next(1);
-  consumer.next(2);
-  consumer.next(3);
-  // you can't next values after error or complete
-  // you can't error and complete
-});
+const a = from([from([1, 2]), from([2, 3]), from([3, 4])]);
 
-stream.subscribe(console.log);
+// antipattern in RxjS
+// you want to avoid nesting subscribe blocks
+// because RxJS comes with built-in flattening operators
+a.subscribe((observable) => observable.subscribe(console.log));
