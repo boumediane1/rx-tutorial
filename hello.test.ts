@@ -1,14 +1,18 @@
+import { Subject, combineLatest } from 'rxjs';
+
 it('works', () => {
-  let a = 3;
-  let b = 3;
-  let c = a + b;
-  expect(c).toBe(6);
-  a++;
-  c = a + b;
-  expect(c).toBe(7);
+  const a = new Subject();
+  const b = new Subject();
+  const c = combineLatest([a, b]);
+
+  // consumer
+  c.subscribe(console.log);
+
+  // producer
+  a.next('hello world');
+  b.next('goodbye world');
 });
 
-// adding a value to a did not cause c to change
-// the only c would change is if I explicitly update it
-// I had to imperatively change the state of the program to keep it in sync
-// hence, there's no reactivity
+// Expected output: [ 'hello world', 'goodbye world' ]
+// The combineLatest operator merges the latest values from two source streams
+// into a third stream, emitting combined values whenever either source stream emits.
