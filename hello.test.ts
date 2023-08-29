@@ -1,9 +1,9 @@
-import { Subject, combineLatest } from 'rxjs';
+import { Subject, merge } from 'rxjs';
 
 it('works', () => {
   const a = new Subject();
   const b = new Subject();
-  const c = combineLatest([a, b]);
+  const c = merge(a, b);
 
   // consumer
   c.subscribe(console.log);
@@ -13,6 +13,9 @@ it('works', () => {
   b.next('goodbye world');
 });
 
-// Expected output: [ 'hello world', 'goodbye world' ]
-// The combineLatest operator merges the latest values from two source streams
-// into a third stream, emitting combined values whenever either source stream emits.
+// Expected output:
+// hello world
+// goodbye world
+
+// The merge operator combines events individually from multiple source streams,
+// allowing values from both sources to be interleaved in a single output stream.
