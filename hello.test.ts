@@ -1,20 +1,7 @@
-import { Subject } from 'rxjs';
+import { interval } from 'rxjs';
 
-const s = new Subject<number>();
+const s = interval(1000);
 s.subscribe((value) => console.log(value, process.hrtime()));
-
-console.log('nexting 1...');
-s.next(1);
-
-setTimeout(() => {
-  console.log('nexting 2...');
-  s.next(2);
-}, 1000);
-
-setTimeout(() => {
-  console.log('nexting 3...');
-  s.next(3);
-}, 2000);
 
 // Expected output:
 // nexting 1...
@@ -24,6 +11,4 @@ setTimeout(() => {
 // nexting 3...
 // 3 [ 38423, 599250068 ]
 
-// When calling 'next', the subscription callback is immediately executed,
-// logging the emitted value along with the high-resolution time from
-// the Node.js 'process.hrtime()' function.
+// This is how you do it declaratively instead of imperatively
