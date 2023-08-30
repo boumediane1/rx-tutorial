@@ -1,14 +1,20 @@
-import { Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 
-const s = new Subject<number>();
+const producer = new Observable((consumer) => {
+  let i = 0;
+  const interval = setInterval(() => consumer.next(i++), 1000);
+  return () => clearInterval(interval);
+});
 
-let i = 0;
-setInterval(() => {
-  s.next(i++);
-}, 1000);
+const subscription = producer.subscribe((value) => console.log(value));
 
-setInterval(() => {
-  s.next(i++);
-}, 500);
+setTimeout(() => subscription.unsubscribe(), 5000);
 
-// side effect: you now have a piece of code that mutates the shared more or less global variable
+// observable -> producer
+// observer -> consumer
+
+// Expected output:
+// 0
+// 1
+// 2
+// 3
