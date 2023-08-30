@@ -1,19 +1,14 @@
 import { Subject } from 'rxjs';
 
-// whether we subscribe or not, the code is still running
-// and the program will not exit right away
-// The code does the same thing regardless of the number of subscribers
 const s = new Subject<number>();
 
-console.log('nexting 1...');
-s.next(1);
-
-setTimeout(() => {
-  console.log('nexting 1...');
-  s.next(2);
+let i = 0;
+setInterval(() => {
+  s.next(i++);
 }, 1000);
 
-setTimeout(() => {
-  console.log('nexting 2...');
-  s.next(3);
-}, 2000);
+setInterval(() => {
+  s.next(i++);
+}, 500);
+
+// side effect: you now have a piece of code that mutates the shared more or less global variable
