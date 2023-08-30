@@ -1,14 +1,35 @@
-import { interval } from 'rxjs';
+import { Subject } from 'rxjs';
 
-const s = interval(1000);
-s.subscribe((value) => console.log(value, process.hrtime()));
+const s = new Subject<number>();
+
+s.subscribe((value) => console.log('subscription 1: ', value, process.hrtime()));
+
+setTimeout(() => {
+  s.subscribe((value) => console.log('subscription 2: ', value, process.hrtime()));
+}, 500);
+
+console.log('nexting 1...');
+s.next(1);
+
+setTimeout(() => {
+  console.log('nexting 2...');
+  s.next(2);
+}, 1000);
+
+setTimeout(() => {
+  console.log('nexting 3...');
+  s.next(3);
+}, 2000);
 
 // Expected output:
 // nexting 1...
-// 1 [ 38423, 597598882 ]
+// subscription 1:  1 [ 55140, 17471324 ]
 // nexting 2...
-// 2 [ 38423, 599097102 ]
+// subscription 1:  2 [ 55141, 19358819 ]
+// subscription 2:  2 [ 55141, 19742184 ]
 // nexting 3...
-// 3 [ 38423, 599250068 ]
+// subscription 1:  3 [ 55142, 18830861 ]
+// subscription 2:  3 [ 55142, 19213779 ]
 
-// This is how you do it declaratively instead of imperatively
+// Subscription 2 was not created until 500 milliseconds
+// but the value 1 was nexted immediately
