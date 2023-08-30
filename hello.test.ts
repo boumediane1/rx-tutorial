@@ -1,35 +1,25 @@
-import { Subject } from 'rxjs';
+import { interval } from 'rxjs';
 
-const s = new Subject<number>();
-
+const s = interval(1000);
 s.subscribe((value) => console.log('subscription 1: ', value, process.hrtime()));
 
 setTimeout(() => {
   s.subscribe((value) => console.log('subscription 2: ', value, process.hrtime()));
 }, 500);
 
-console.log('nexting 1...');
-s.next(1);
-
-setTimeout(() => {
-  console.log('nexting 2...');
-  s.next(2);
-}, 1000);
-
-setTimeout(() => {
-  console.log('nexting 3...');
-  s.next(3);
-}, 2000);
-
 // Expected output:
-// nexting 1...
-// subscription 1:  1 [ 55140, 17471324 ]
-// nexting 2...
-// subscription 1:  2 [ 55141, 19358819 ]
-// subscription 2:  2 [ 55141, 19742184 ]
-// nexting 3...
-// subscription 1:  3 [ 55142, 18830861 ]
-// subscription 2:  3 [ 55142, 19213779 ]
+// subscription 1:  0 [ 56732, 400681117 ]
+// subscription 2:  0 [ 56732, 902042465 ]
+// subscription 1:  1 [ 56733, 401290826 ]
+// subscription 2:  1 [ 56733, 902813118 ]
+// subscription 1:  2 [ 56734, 401580510 ]
+// subscription 2:  2 [ 56734, 903155090 ]
+// ...
 
-// Subscription 2 was not created until 500 milliseconds
-// but the value 1 was nexted immediately
+// The two subscriptions are staggered by 500 milliseconds.
+// Each subscription creates its own interval stream.
+// Unlike Subject, where there's a single shared stream,
+// observables like 'interval' create individual streams for each subscriber.
+
+// Observables are unicast, meaning each subscriber gets its own independent stream.
+// Subjects, on the other hand, are multicast, sharing the same stream among all subscribers.
