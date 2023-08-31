@@ -1,17 +1,23 @@
 import { interval, map, take } from 'rxjs';
 
-const numbers = interval(5000).pipe(take(3));
+const numbers = interval(1000).pipe(take(3));
 
-numbers
-  .pipe(
-    map(() =>
-      interval(5000).pipe(
-        take(3),
-        map(() => 'inner'),
-      ),
-    ),
-  )
-  .subscribe((observable) => {
-    console.log('outer');
-    observable.subscribe(console.log);
-  });
+const letters = interval(250).pipe(
+  take(3),
+  map((i) => String.fromCharCode(i + 97)),
+);
+
+const project = (number: number) => letters.pipe(map((letter) => [number, letter]));
+
+numbers.pipe(map(project)).subscribe((observable) => observable.subscribe(console.log));
+
+// Expected output:
+// [ 0, 'a' ]
+// [ 0, 'b' ]
+// [ 0, 'c' ]
+// [ 1, 'a' ]
+// [ 1, 'b' ]
+// [ 1, 'c' ]
+// [ 2, 'a' ]
+// [ 2, 'b' ]
+// [ 2, 'c' ]
