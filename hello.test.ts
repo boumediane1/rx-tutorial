@@ -1,10 +1,11 @@
-import { delay, filter, interval, map } from 'rxjs';
+import { Observable } from 'rxjs';
 
-const customOperator = () => () =>
-  interval(500).pipe(
-    filter((value) => value % 2 === 0),
-    map((value) => value * 2),
-    delay(3000),
-  );
+const stream: Observable<number> = new Observable((consumer) => {
+  consumer.next(1);
+  consumer.next(2);
+  consumer.next(3);
+  // you can't next values after error or complete
+  // you can't error and complete
+});
 
-interval(500).pipe(customOperator()).subscribe(console.log);
+stream.subscribe(console.log);
