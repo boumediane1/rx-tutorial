@@ -1,4 +1,4 @@
-import { exhaustAll, interval, map, take } from 'rxjs';
+import { interval, map, switchAll, take } from 'rxjs';
 
 const numbers = interval(1000).pipe(take(3));
 
@@ -9,15 +9,14 @@ const letters = interval(500).pipe(
 
 const project = (number: number) => letters.pipe(map((letter) => [number, letter]));
 
-// exhaustAll goes like hold on, I have not yet exhausted the 1st inner observable
-// and it lets it finish, the 2nd inner observable begins
-// before the 1st one completed, so we never looked at the 2nd one
-numbers.pipe(map(project), exhaustAll()).subscribe(console.log);
+// when there's a new observable, it just cancels the subscription
+// to the previous one immediately
+// switches over or subscribe to the latest one
+numbers.pipe(map(project), switchAll()).subscribe(console.log);
 
 // Expected output:
 // [ 0, 'a' ]
-// [ 0, 'b' ]
-// [ 0, 'c' ]
+// [ 1, 'a' ]
 // [ 2, 'a' ]
 // [ 2, 'b' ]
 // [ 2, 'c' ]
