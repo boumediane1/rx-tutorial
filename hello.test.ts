@@ -1,4 +1,4 @@
-import { interval, map, take } from 'rxjs';
+import { interval, map, mergeAll, take } from 'rxjs';
 
 const numbers = interval(1000).pipe(take(3));
 
@@ -9,7 +9,7 @@ const letters = interval(250).pipe(
 
 const project = (number: number) => letters.pipe(map((letter) => [number, letter]));
 
-numbers.pipe(map(project)).subscribe((observable) => observable.subscribe(console.log));
+numbers.pipe(map(project), mergeAll()).subscribe(console.log);
 
 // Expected output:
 // [ 0, 'a' ]
