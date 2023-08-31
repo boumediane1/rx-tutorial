@@ -1,8 +1,6 @@
-import { from } from 'rxjs';
+import { from, mergeAll } from 'rxjs';
 
-const a = from([from([1, 2]), from([2, 3]), from([3, 4])]);
+const a = from([from([1, 2]), from([2, 3]), from([3, 4])]).pipe(mergeAll());
 
-// antipattern in RxjS
-// you want to avoid nesting subscribe blocks
-// because RxJS comes with built-in flattening operators
-a.subscribe((observable) => observable.subscribe(console.log));
+// this is the same thing as having nested subscribe blocks
+a.subscribe(console.log);
