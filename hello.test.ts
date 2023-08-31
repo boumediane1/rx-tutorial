@@ -1,20 +1,7 @@
-import { Observable } from 'rxjs';
+import { filter, interval, map } from 'rxjs';
 
-const producer = new Observable((consumer) => {
-  let i = 0;
-  const interval = setInterval(() => consumer.next(i++), 1000);
-  return () => clearInterval(interval);
-});
+const fn1 = filter((value: number) => value % 2 === 0);
 
-const subscription = producer.subscribe((value) => console.log(value));
+const fn2 = map((value: number) => value * 2);
 
-setTimeout(() => subscription.unsubscribe(), 5000);
-
-// observable -> producer
-// observer -> consumer
-
-// Expected output:
-// 0
-// 1
-// 2
-// 3
+fn2(fn1(interval(500))).subscribe(console.log);
