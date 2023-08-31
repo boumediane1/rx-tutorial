@@ -1,6 +1,17 @@
-import { from, mergeAll } from 'rxjs';
+import { interval, map, take } from 'rxjs';
 
-const a = from([from([1, 2]), from([2, 3]), from([3, 4])]).pipe(mergeAll());
+const numbers = interval(5000).pipe(take(3));
 
-// this is the same thing as having nested subscribe blocks
-a.subscribe(console.log);
+numbers
+  .pipe(
+    map(() =>
+      interval(5000).pipe(
+        take(3),
+        map(() => 'inner'),
+      ),
+    ),
+  )
+  .subscribe((observable) => {
+    console.log('outer');
+    observable.subscribe(console.log);
+  });
